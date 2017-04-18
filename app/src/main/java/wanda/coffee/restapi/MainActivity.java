@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -12,10 +13,13 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Iterator;
@@ -29,7 +33,7 @@ import javax.net.ssl.HttpsURLConnection;
 public class MainActivity extends Activity {
     EditText edtName, edtPrice, edtQuantity;
     Button btnSubmit;
-    String name,quantity,price;
+    String name, quantity, price;
 
 
     @Override
@@ -38,24 +42,29 @@ public class MainActivity extends Activity {
         setContentView(R.layout.layout);
 
 
+        edtName = (EditText) findViewById(R.id.edtName);
+        edtPrice = (EditText) findViewById(R.id.edtPrice);
+        edtQuantity = (EditText) findViewById(R.id.edtQuantity);
+
+        btnSubmit = (Button) findViewById(R.id.btnSubmit);
+
+        name = edtName.getText().toString();
+        quantity = edtQuantity.getText().toString();
+        price = edtPrice.getText().toString();
 
 
-       edtName=(EditText) findViewById(R.id.edtName);
-        edtPrice=(EditText) findViewById(R.id.edtPrice);
-        edtQuantity=(EditText) findViewById(R.id.edtQuantity);
-
-        btnSubmit=(Button) findViewById(R.id.btnSubmit);
-
-        name= edtName.getText().toString();
-        quantity= edtQuantity.getText().toString();
-        price= edtPrice.getText().toString();
-
-        new SendPostRequest().execute(name, quantity, price);
+        btnSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new SendPostRequest().execute(name,quantity,price);
+            }
+        });
 
     }
 
 
-    public class SendPostRequest extends AsyncTask<String, Void, String> {
+
+   public class SendPostRequest extends AsyncTask<String, Void, String> {
 
         protected void onPreExecute() {
         }
@@ -73,9 +82,10 @@ public class MainActivity extends Activity {
                 Log.e("params",postDataParams.toString());
 
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(15000 /* milliseconds */);
-                conn.setConnectTimeout(15000 /* milliseconds */);
-                conn.setRequestMethod("POST");
+                conn.setReadTimeout(15000 );
+                 conn.setConnectTimeout(15000 );
+
+              conn.setRequestMethod("POST");
                 conn.setDoInput(true);
                 conn.setDoOutput(true);
 
@@ -126,6 +136,7 @@ public class MainActivity extends Activity {
     }
 }
 
+
     public String getPostDataString(JSONObject params) throws Exception {
 
         StringBuilder result = new StringBuilder();
@@ -151,4 +162,3 @@ public class MainActivity extends Activity {
         return result.toString();
     }
 }
-
